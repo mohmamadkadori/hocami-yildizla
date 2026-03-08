@@ -2,7 +2,7 @@ import os, psycopg2
 
 
 def get_db():
-    DATABASE_URL = os.environ.get('DATABASE_URL')
+    DATABASE_URL = os.environ.get('DATABASE_URL', 'postgresql://postgres:Hasonberg-123@db.gnqtismdbgwyyzcxgneg.supabase.co:5432/postgres')
     
     if not DATABASE_URL:
         raise Exception("DATABASE_URL environment variable is not set!")
