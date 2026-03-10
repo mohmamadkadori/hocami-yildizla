@@ -69,11 +69,14 @@ def rate():
             cursor.execute("SELECT submissions FROM hocalar WHERE id = %s", (profId,))
             submissions_row = cursor.fetchone()
             submissions = submissions_row[0] if submissions_row else 0
-            
+            print(f"Submissions: {submissions}")
             cursor.execute("SELECT rating FROM hocalar WHERE id = %s", (profId,))
             rating_row = cursor.fetchone()
-            avgRating = rating_row[0] if rating_row and rating_row[0] is not None else 0
-            
+            if rating_row and rating_row[0] is not None:
+                avgRating = rating_row[0]
+            else:
+                avgRating = 0
+            print(f"Avg Rating: {avgRating}")
             newRating = (avgRating * submissions + rating) / (submissions + 1)
             cursor.execute("UPDATE hocalar SET rating = %s, submissions = %s WHERE id = %s", (newRating, submissions+1, profId,))
             conn.commit()
@@ -83,7 +86,7 @@ def rate():
             flash(message, "success")
             return redirect(f"/result?id={profId}")
         else:
-            message = "Invalid rating value. Please enter a number between 1 and 5."
+            message = "Geçersiz puan değeri. Lütfen 1 ile 5 arasında bir sayı girin."
             flash(message, "danger")
             return redirect(f"/result?id={profId}")
     else:
@@ -144,4 +147,3 @@ def add():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))  # Render provides PORT
     app.run(host="0.0.0.0", port=port, debug=True)
-    
