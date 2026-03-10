@@ -36,9 +36,11 @@ def result():
     result = cursor.execute("SELECT * FROM hocalar WHERE id = ?", (profId,)).fetchone()
     if not result:
         flash("Hoca bulunamadı. Lütfen geçerli bir ID girin.", "danger")
+        cursor.close()
         conn.close()
         return redirect("/search")
     comments = cursor.execute("SELECT * FROM comments WHERE profId = ?", (profId,)).fetchall()
+    cursor.close()
     conn.close()
     return render_template("result.html", result=result, comments=comments)
     
