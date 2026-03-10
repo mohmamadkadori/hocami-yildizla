@@ -18,7 +18,7 @@ def index():
     cursor.execute("""CREATE TABLE IF NOT EXISTS hocalar (
                 id SERIAL PRIMARY KEY, name TEXT, rating FLOAT, submissions INTEGER DEFAULT 0)""")
     cursor.execute("""CREATE TABLE IF NOT EXISTS comments (
-                profId INTEGER REFERENCES hocalar(id), comment TEXT)""")
+                profid INTEGER REFERENCES hocalar(id), comment TEXT)""")
     conn.commit()
     cursor.close()
     conn.close()
@@ -39,17 +39,17 @@ def search():
 
 @app.route('/result')
 def result():
-    profId = request.args.get("id")
+    profid = request.args.get("id")
     conn = helpers.get_db()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM hocalar WHERE id = %s", (profId,))
+    cursor.execute("SELECT * FROM hocalar WHERE id = %s", (profid,))
     result = cursor.fetchone()
     if not result:
         flash("Hoca bulunamadı. Lütfen geçerli bir ID girin.", "danger")
         cursor.close()
         conn.close()
         return redirect("/search")
-    cursor.execute("SELECT * FROM comments WHERE profId = %s", (profId,))
+    cursor.execute("SELECT * FROM comments WHERE profid = %s", (profid,))
     comments = cursor.fetchall()
     cursor.close()
     conn.close()
@@ -59,62 +59,62 @@ def result():
 
 @app.route('/rate', methods=["POST"])
 def rate():
-    profId = int(request.form.get("profId"))
+    profid = int(request.form.get("profid"))
     rating = request.form.get("rating")
     if rating:
         rating = float(rating)
         if rating >= 1 and rating <=5:
             conn = helpers.get_db()
             cursor = conn.cursor()
-            cursor.execute("SELECT submissions FROM hocalar WHERE id = %s", (profId,))
+            cursor.execute("SELECT submissions FROM hocalar WHERE id = %s", (profid,))
             submissions_row = cursor.fetchone()
-            submissions = submissions_row[0] if submissions_row else 0
+            submissions = submissions_row['submissions'] if submissions_row else 0
             print(f"Submissions: {submissions}")
-            cursor.execute("SELECT rating FROM hocalar WHERE id = %s", (profId,))
+            cursor.execute("SELECT rating FROM hocalar WHERE id = %s", (profid,))
             rating_row = cursor.fetchone()
-            if rating_row and rating_row[0] is not None:
-                avgRating = rating_row[0]
+            if rating_row and rating_row['rating'] is not None:
+                avgRating = rating_row['rating']
             else:
                 avgRating = 0
             print(f"Avg Rating: {avgRating}")
             newRating = (avgRating * submissions + rating) / (submissions + 1)
-            cursor.execute("UPDATE hocalar SET rating = %s, submissions = %s WHERE id = %s", (newRating, submissions+1, profId,))
+            cursor.execute("UPDATE hocalar SET rating = %s, submissions = %s WHERE id = %s", (newRating, submissions+1, profid,))
             conn.commit()
             cursor.close()
             conn.close()
             message = "Puanınız başarıyla kaydedildi. Teşekkür ederiz!"
             flash(message, "success")
-            return redirect(f"/result?id={profId}")
+            return redirect(f"/result?id={profid}")
         else:
             message = "Geçersiz puan değeri. Lütfen 1 ile 5 arasında bir sayı girin."
             flash(message, "danger")
-            return redirect(f"/result?id={profId}")
+            return redirect(f"/result?id={profid}")
     else:
             message = "Geçersiz puan değeri. Lütfen 1 ile 5 arasında bir sayı girin."
             flash(message, "danger")
-            return redirect(f"/result?id={profId}")
+            return redirect(f"/result?id={profid}")
         
     
 
 
 @app.route('/comment', methods=["POST"])
 def comment():
-    profId = int(request.form.get("profId"))
+    profid = int(request.form.get("profid"))
     comment = request.form.get("comment")
     if comment:    
         conn = helpers.get_db()
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO comments (profId, comment) VALUES (%s, %s)", (profId, comment))
+        cursor.execute("INSERT INTO comments (profid, comment) VALUES (%s, %s)", (profid, comment))
         conn.commit()
         cursor.close()
         conn.close()
         message = "Yorumunuz başarıyla kaydedildi. Teşekkür ederiz!"
         flash(message, "success")
-        return redirect(f"/result?id={profId}")
+        return redirect(f"/result?id={profid}")
     else:
         message = "Yorum boş olamaz. Lütfen geçerli bir yorum girin."
         flash(message, "danger")
-        return redirect(f"/result?id={profId}")
+        return redirect(f"/result?id={profid}")
         
 
 
@@ -129,10 +129,10 @@ def add():
         data = cursor.fetchone()
         if not data:
             cursor.execute("INSERT INTO hocalar (name) VALUES (%s) RETURNING id", (name,))
-            id = cursor.fetchone()[0]
+            id = cursor.fetchone()['id']
             message = f"Hoca '{name}' başarıyla eklendi!"
         else:
-            id = data[0]  # First column is id
+            id = data['id']  # First column is id
             message = f"Hoca '{name}' zaten mevcut!"
         flash(message, "success")
         conn.commit()
