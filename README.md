@@ -45,15 +45,15 @@ The templates folder contains all the Jinja2 HTML templates used for rendering p
 
 I chose Bootstrap because it gives a nice appearance with minimal effort, allowing me to focus on functionality rather than spending extensive time on visual design. The small amount of custom CSS was used only for minor tweaks to spacing and alignment.
 
-#### Database Design
+#### Database
 
-The application uses PostgreSQL as its database, which I chose over SQLite for several reasons. First, PostgreSQL is required for deployment on platforms like Render, where the application is hosted. Second, it provides better concurrent access handling, which is important for a multi-user web application. Finally, PostgreSQL offers more robust data types and constraints.
+The application uses PostgreSQL as its database, while I used SQLite for developmenent, I needed to switch to postgreSQL to be able to deploy my app.
 
-The database schema consists of two tables:
+The schema consists of two tables:
 
 1. `hocalar` (professors): Stores professor names, their average ratings (as floats), and the number of rating submissions. The submissions count is necessary for calculating accurate weighted averages when new ratings are added.
 
-2. `comments`: Stores student comments with a foreign key reference to the professor's ID. This creates a one-to-many relationship where each professor can have multiple comments.
+2. `comments`: Stores student comments with the professor id as a foreign key. this lets each professor have multiple comments.
 
 
-The project taught me valuable lessons about full-stack web development, databases, deployment, and the importance of user feedback in interface design. The experience of taking an application from localhost to deployment was educational and highlighted the differences between development and production environments.
+The project taught me valuable lessons about full stack development, databases, deployment, and the importance of feedback in interface design. The experience of taking an app from localhost to deployment was educational and highlighted the differences between development and production environments.
